@@ -1,3 +1,5 @@
+const fetch = require("node-fetch");
+
 module.exports = async function handler(req, res) {
   try {
     const apiKey = process.env.GEMINI_API_KEY;
