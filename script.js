@@ -6,7 +6,7 @@ async function callClaude(prompt) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 2000
+        max_tokens: 8000
       })
     });
     const data = await response.json();
