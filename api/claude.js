@@ -1,6 +1,12 @@
-const fetch = require("node-fetch");
-
 module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   try {
     const apiKey = process.env.GEMINI_API_KEY;
 
@@ -8,23 +14,16 @@ module.exports = async function handler(req, res) {
 
     if (!apiKey) {
       return res.status(500).json({
-        error: "API key tidak terbaca"
+        error: 'API key tidak terbaca'
       });
     }
 
-    // code lain... 
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
+    const body =
+      typeof req.body === 'string'
+        ? JSON.parse(req.body)
+        : req.body;
 
-  try {
-    const { messages, max_tokens } = req.body;
-    const apiKey = process.env.GEMINI_API_KEY;
-
-    if (!apiKey) {
-      return res.status(500).json({ error: 'API key not configured' });
-    }
+    const { messages, max_tokens } = body;
 
     const contents = messages.map(m => ({
       role: m.role === 'assistant' ? 'model' : 'user',
@@ -32,14 +31,16 @@ module.exports = async function handler(req, res) {
     }));
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
           contents,
           generationConfig: {
-            maxOutputTokens: max_tokens || 1000,
+            maxOutputTokens: max_tokens || 1000
           }
         })
       }
@@ -47,16 +48,32 @@ module.exports = async function handler(req, res) {
 
     const data = await response.json();
 
+    console.log(data);
+
     if (data.error) {
-      return res.status(500).json({ error: data.error.message });
+      return res.status(500).json({
+        error: data.error.message
+      });
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Terjadi kesalahan, coba lagi.';
-    res.status(200).json({
-      content: [{ type: 'text', text }]
+    const text =
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      'Tidak ada respon';
+
+    return res.status(200).json({
+      content: [
+        {
+          type: 'text',
+          text
+        }
+      ]
     });
 
   } catch (err) {
-    res.status(500).json({ error: 'Internal server error', detail: err.message });
-  }
+    console.error(err);
 
+    return res.status(500).json({
+      error: err.message
+    });
+  }
+};
