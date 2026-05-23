@@ -1047,19 +1047,42 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// ===== CLAUDE API =====
+// ===== GEMINI API =====
 async function callClaude(prompt) {
-  const res = await fetch('/api/claude', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-  const data = await res.json();
-  return data.content?.map(b => b.text || '').join('') || 'Terjadi kesalahan, coba lagi.';
+  try {
+    const response = await fetch('/api/claude', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 1000
+      })
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+
+    if (data.error) {
+      return "ERROR: " + data.error;
+    }
+
+    return (
+      data.content?.[0]?.text ||
+      'Tidak ada respon.'
+    );
+
+  } catch (err) {
+    console.error(err);
+    return 'Terjadi kesalahan.';
+  }
 }
 
 function showLoading(resultId, textId) {
