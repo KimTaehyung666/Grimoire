@@ -74,7 +74,7 @@ module.exports = async function handler(req, res) {
     );
 
     const data = await response.json();
-
+    console.log(JSON.stringify(data, null, 2));
     console.log('GEMINI RESPONSE:', data);
 
     // Error Gemini
@@ -85,13 +85,16 @@ module.exports = async function handler(req, res) {
     }
 
     // Ambil text hasil
-    const text =
-		data?.candidates?.[0]?.content?.parts
-    		?.map(p => p.text)
-   		 .join('') ||
-		'Tidak ada respon dari AI';
+    const candidate = data?.candidates?.[0];
 
-    // Return sukses
+	console.log("FINISH REASON:", candidate?.finishReason);
+
+	const text =
+  	candidate?.content?.parts
+		?.map(p => p.text || '')
+    	.join('') ||
+ 	 'Tidak ada respon dari AI';
+	// Return sukses
     return res.status(200).json({
       content: [
         {
