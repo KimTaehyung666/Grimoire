@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writer's Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --parchment: #f5edd6;
+    --parchment2: #ede0c0;
+    --amber: #c8860a;
+    --rust: #9b3a1a;
+    --sage: #4a6741;
+    --mist: #8fa89e;
+    --paper: #faf6ed;
+    --shadow: rgba(26,18,8,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Courier Prime', monospace;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(200,134,10,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(155,58,26,0.05) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 3rem 2rem 1.5rem;
+    border-bottom: 2px solid var(--amber);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '✦ ✦ ✦';
+    display: block;
+    color: var(--amber);
+    font-size: 0.75rem;
+    letter-spacing: 1rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  header h1 span { color: var(--amber); font-style: italic; }
+  header p {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--mist);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 1rem 1rem 0;
+    border-bottom: 1px solid var(--parchment2);
+  }
+  nav button {
+    background: none;
+    border: none;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mist);
+    padding: 0.6rem 1.1rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+    top: 1px;
+  }
+  nav button:hover { color: var(--ink); }
+  nav button.active {
+    color: var(--amber);
+    border-bottom-color: var(--amber);
+    font-weight: 700;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .tab-panel { display: none; animation: fadeUp 0.3s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .section-title span { color: var(--amber); font-style: italic; }
+  .section-sub {
+    font-size: 0.78rem;
+    color: var(--mist);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.75rem;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--parchment2);
+    border-radius: 2px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 3px 3px 0 var(--parchment2);
+  }
+  .card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--rust);
+    font-style: italic;
+  }
+
+  /* FORM ELEMENTS */
+  label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 0.35rem;
+    margin-top: 1rem;
+  }
+  label:first-child { margin-top: 0; }
+  input[type=text], textarea, select {
+    width: 100%;
+    background: var(--parchment);
+    border: 1px solid var(--parchment2);
+    border-radius: 1px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.9rem;
+    color: var(--ink);
+    padding: 0.6rem 0.8rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type=text]:focus, textarea:focus, select:focus {
+    border-color: var(--amber);
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  select option { background: var(--parchment); }
+
+  /* GRID */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+  @media(max-width:600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--ink);
+    color: var(--parchment);
+    border: none;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.4rem;
+    cursor: pointer;
+    margin-top: 1.25rem;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--amber); color: var(--ink); }
+  .btn-ghost {
+    background: none;
+    color: var(--amber);
+    border: 1px solid var(--amber);
+  }
+  .btn-ghost:hover { background: var(--amber); color: var(--ink); }
+  .btn-danger { background: var(--rust); }
+  .btn-danger:hover { background: #7a2d14; color: var(--parchment); }
+  .btn-sm { padding: 0.4rem 0.85rem; font-size: 0.72rem; margin-top: 0; }
+
+  /* RESULT BOX */
+  .result-box {
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.25rem;
+    border-radius: 1px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    min-height: 60px;
+    position: relative;
+  }
+  .result-box .loading {
+    color: var(--amber);
+    font-style: italic;
+  }
+  .result-box .result-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 0.75rem;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: 1px solid var(--mist);
+    color: var(--mist);
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* TAG */
+  .tag {
+    display: inline-block;
+    background: var(--parchment2);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+    margin: 0.2rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .tag:hover, .tag.selected { background: var(--amber); color: var(--ink); border-color: var(--amber); }
+
+  /* TRACKER */
+  .char-card {
+    background: var(--paper);
+    border: 1px solid var(--parchment2);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    box-shadow: 2px 2px 0 var(--parchment2);
+  }
+  .char-card .char-info h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-style: italic;
+  }
+  .char-card .char-info p { font-size: 0.8rem; color: var(--mist); margin-top: 0.2rem; }
+  .char-card .char-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+  /* PROGRESS */
+  .progress-wrap { margin: 0.75rem 0; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--mist); margin-bottom: 0.35rem; }
+  .progress-bar { height: 6px; background: var(--parchment2); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--amber); border-radius: 3px; transition: width 0.4s ease; }
+
+  /* CHAPTER LIST */
+  .chapter-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed var(--parchment2);
+  }
+  .chapter-item:last-child { border-bottom: none; }
+  .chapter-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    color: var(--amber);
+    font-style: italic;
+    min-width: 2rem;
+  }
+  .chapter-status {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 1px;
+  }
+  .status-draft { background: var(--parchment2); color: var(--mist); }
+  .status-wip { background: rgba(200,134,10,0.2); color: var(--amber); }
+  .status-done { background: rgba(74,103,65,0.2); color: var(--sage); }
+
+  /* DIVIDER */
+  .divider {
+    text-align: center;
+    color: var(--amber);
+    font-size: 0.7rem;
+    letter-spacing: 0.5rem;
+    margin: 1.5rem 0;
+    opacity: 0.5;
+  }
+
+  /* PROMPT TAGS ROW */
+  .tags-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(4rem);
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    padding: 0.7rem 1.5rem;
+    border-left: 3px solid var(--amber);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  /* SNIPPET */
+  .snippet-item {
+    background: var(--paper);
+    border: 1px solid var(--parchment2);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 2px 2px 0 var(--parchment2);
+  }
+  .snippet-item .snippet-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.4rem;
+  }
+  .snippet-item .snippet-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--ink);
+    white-space: pre-wrap;
+  }
+  .snippet-item .snippet-actions { margin-top: 0.6rem; display: flex; gap: 0.5rem; }
+
+  /* TIMER */
+  .timer-display {
+    text-align: center;
+    padding: 2.5rem 1rem;
+  }
+  .timer-clock {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 10vw, 6rem);
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .timer-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-top: 0.5rem;
+  }
+  .timer-controls { display: flex; justify-content: center; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .timer-presets { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+  .timer-preset {
+    background: none;
+    border: 1px solid var(--parchment2);
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.75rem;
+    color: var(--mist);
+    padding: 0.35rem 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .timer-preset:hover, .timer-preset.active { border-color: var(--amber); color: var(--amber); }
+
+  /* PLAYLIST */
+  .playlist-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px dashed var(--parchment2);
+    transition: background 0.15s;
+  }
+  .playlist-item:last-child { border-bottom: none; }
+  .playlist-item:hover { background: rgba(200,134,10,0.05); }
+  .playlist-emoji { font-size: 1.4rem; flex-shrink: 0; }
+  .playlist-info { flex: 1; }
+  .playlist-info .pl-name { font-size: 0.9rem; font-family: 'Playfair Display', serif; font-style: italic; }
+  .playlist-info .pl-desc { font-size: 0.75rem; color: var(--mist); margin-top: 0.1rem; }
+  .playlist-link {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-decoration: none;
+    border: 1px solid var(--amber);
+    padding: 0.25rem 0.6rem;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .playlist-link:hover { background: var(--amber); color: var(--ink); }
+
+  /* READING LIST */
+  .book-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px dashed var(--parchment2);
+  }
+  .book-item:last-child { border-bottom: none; }
+  .book-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    color: var(--amber);
+    font-style: italic;
+    min-width: 1.5rem;
+    padding-top: 0.1rem;
+  }
+  .book-info { flex: 1; }
+  .book-info .book-title { font-size: 0.9rem; font-weight: 700; }
+  .book-info .book-author { font-size: 0.78rem; color: var(--mist); margin-top: 0.1rem; }
+  .book-info .book-note { font-size: 0.78rem; color: var(--ink); margin-top: 0.25rem; font-style: italic; }
+  .book-status-badge {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+  .bstatus-want { background: var(--parchment2); color: var(--mist); }
+  .bstatus-reading { background: rgba(200,134,10,0.2); color: var(--amber); }
+  .bstatus-done { background: rgba(74,103,65,0.2); color: var(--sage); }
+
+  /* NAME GEN */
+  .name-result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+  .name-chip {
+    background: var(--paper);
+    border: 1px solid var(--parchment2);
+    padding: 0.6rem 0.85rem;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 2px 2px 0 var(--parchment2);
+  }
+  .name-chip:hover { border-color: var(--amber); color: var(--amber); box-shadow: 2px 2px 0 var(--amber); }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem 1rem 2.5rem;
+    border-top: 1px solid var(--parchment2);
+    margin-top: 2rem;
+  }
+  footer .footer-ornament {
+    color: var(--amber);
+    font-size: 0.7rem;
+    letter-spacing: 0.8rem;
+    opacity: 0.5;
+    margin-bottom: 0.75rem;
+  }
+  footer .footer-copy {
+    font-size: 0.78rem;
+    color: var(--mist);
+    letter-spacing: 0.08em;
+  }
+  footer .footer-copy span { color: var(--amber); }
+  footer .footer-heart { color: var(--rust); }
+  footer .footer-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Writer's <span>Companion</span></h1>
+  <p>Your complete storytelling toolkit</p>
+</header>
+
+<nav id="nav">
+  <button class="active" data-tab="outline">📐 Story Outline</button>
+  <button data-tab="character">🎭 Character Creator</button>
+  <button data-tab="world">🌍 World Building</button>
+  <button data-tab="twist">💡 Plot Twist</button>
+  <button data-tab="prompt">✍️ Writing Prompt</button>
+  <button data-tab="tracker">📊 Progress Tracker</button>
+  <button data-tab="snippet">🔖 Snippet Saver</button>
+  <button data-tab="timer">⏱️ Writing Timer</button>
+  <button data-tab="playlist">🎵 Mood Playlist</button>
+  <button data-tab="readinglist">📚 Reading List</button>
+  <button data-tab="namegen">🔄 Name Generator</button>
+</nav>
+
+<main>
+
+  <!-- ========== STORY OUTLINE ========== -->
+  <div class="tab-panel active" id="tab-outline">
+    <div class="section-title">Story <span>Outline</span> Builder</div>
+    <div class="section-sub">Susun struktur ceritamu dari awal hingga akhir</div>
+
+    <div class="card">
+      <h3>Dasar Cerita</h3>
+      <label>Judul / Premis Cerita</label>
+      <input type="text" id="ol-title" placeholder="Contoh: Seorang gadis menemukan surat dari masa depannya...">
+      <div class="grid2">
+        <div>
+          <label>Genre</label>
+          <select id="ol-genre">
+            <option>Fantasy</option>
+            <option>Romance</option>
+            <option>Thriller</option>
+            <option>Sci-Fi</option>
+            <option>Horror</option>
+            <option>Slice of Life</option>
+            <option>Mystery</option>
+            <option>Adventure</option>
+          </select>
+        </div>
+        <div>
+          <label>Sudut Pandang</label>
+          <select id="ol-pov">
+            <option>Orang Pertama (Aku)</option>
+            <option>Orang Ketiga Terbatas</option>
+            <option>Orang Ketiga Serba Tahu</option>
+            <option>Orang Kedua (Kamu)</option>
+          </select>
+        </div>
+      </div>
+      <label>Tokoh Utama & Tujuannya</label>
+      <input type="text" id="ol-protag" placeholder="Contoh: Rina, 17 tahun, ingin menemukan siapa ayah kandungnya">
+      <label>Konflik Utama</label>
+      <textarea id="ol-conflict" placeholder="Apa masalah atau hambatan besar yang dihadapi tokoh utama?"></textarea>
+      <button class="btn" onclick="generateOutline()">✦ Generate Outline</button>
+    </div>
+
+    <div class="result-box" id="ol-result" style="display:none">
+      <button class="copy-btn" onclick="copyResult('ol-result')">Copy</button>
+      <div class="result-label">Story Outline</div>
+      <div id="ol-result-text"></div>
+    </div>
+  </div>
+
+  <!-- ========== CHARACTER CREATOR ========== -->
+  <div class="tab-panel" id="tab-character">
+    <div class="section-title">Character <span>Creator</span></div>
+    <div class="section-sub">Bangun profil karakter yang hidup dan berkedalaman</div>
+
+    <div class="card">
+      <h3>Identitas Karakter</h3>
+      <div class="grid3">
+        <div>
+          <label>Nama</label>
+          <input type="text" id="ch-name" placeholder="Nama karakter">
+        </div>
+        <div>
+          <label>Usia</label>
+          <input type="text" id="ch-age" placeholder="Usia">
+        </div>
+        <div>
+          <label>Peran</label>
+          <select id="ch-role">
+            <option>Protagonis</option>
+            <option>Antagonis</option>
+            <option>Sidekick</option>
+            <option>Love Interest</option>
+            <option>Mentor</option>
+            <option>Anti-Hero</option>
+          </select>
+        </div>
+      </div>
+      <label>Kepribadian (pilih beberapa)</label>
+      <div class="tags-row" id="ch-traits">
+        <span class="tag" onclick="toggleTag(this)">Pemberani</span>
+        <span class="tag" onclick="toggleTag(this)">Introvert</span>
+        <span class="tag" onclick="toggleTag(this)">Sarkastis</span>
+        <span class="tag" onclick="toggleTag(this)">Optimis</span>
+        <span class="tag" onclick="toggleTag(this)">Ambisius</span>
+        <span class="tag" onclick="toggleTag(this)">Rapuh</span>
+        <span class="tag" onclick="toggleTag(this)">Setia</span>
+        <span class="tag" onclick="toggleTag(this)">Misterius</span>
+        <span class="tag" onclick="toggleTag(this)">Keras Kepala</span>
+        <span class="tag" onclick="toggleTag(this)">Empatik</span>
+        <span class="tag" onclick="toggleTag(this)">Manipulatif</span>
+        <span class="tag" onclick="toggleTag(this)">Humoris</span>
+      </div>
+      <label>Latar Belakang Singkat</label>
+      <textarea id="ch-bg" placeholder="Ceritakan asal-usul atau pengalaman penting yang membentuk karakter ini..."></textarea>
+      <label>Keinginan Terdalam vs Ketakutan Terbesar</label>
+      <div class="grid2">
+        <input type="text" id="ch-want" placeholder="Apa yang paling diinginkan?">
+        <input type="text" id="ch-fear" placeholder="Apa yang paling ditakuti?">
+      </div>
+      <button class="btn" onclick="generateCharacter()">✦ Generate Karakter</button>
+    </div>
+
+    <div class="result-box" id="ch-result" style="display:none">
+      <button class="copy-btn" onclick="copyResult('ch-result')">Copy</button>
+      <div class="result-label">Character Profile</div>
+      <div id="ch-result-text"></div>
+    </div>
+  </div>
+
+  <!-- ========== WORLD BUILDING ========== -->
+  <div class="tab-panel" id="tab-world">
+    <div class="section-title">World <span>Building</span> Tool</div>
+    <div class="section-sub">Bangun dunia fiksimu dengan detail yang kaya</div>
+
+    <div class="card">
+      <h3>Dasar Dunia</h3>
+      <div class="grid2">
+        <div>
+          <label>Nama Dunia / Setting</label>
+          <input type="text" id="wb-name" placeholder="Contoh: Kota Navarath, Era 2185...">
+        </div>
+        <div>
+          <label>Tipe Dunia</label>
+          <select id="wb-type">
+            <option>High Fantasy</option>
+            <option>Urban Fantasy</option>
+            <option>Dystopia</option>
+            <option>Post-Apocalyptic</option>
+            <option>Steampunk</option>
+            <option>Dunia Nyata + Elemen Magis</option>
+            <option>Sci-Fi Space Opera</option>
+            <option>Historical Fiction</option>
+          </select>
+        </div>
+      </div>
+      <label>Aspek yang Ingin Dibangun</label>
+      <div class="tags-row" id="wb-aspects">
+        <span class="tag selected" onclick="toggleTag(this)">Sistem Kekuasaan</span>
+        <span class="tag selected" onclick="toggleTag(this)">Budaya & Tradisi</span>
+        <span class="tag" onclick="toggleTag(this)">Sistem Magis</span>
+        <span class="tag" onclick="toggleTag(this)">Geografi</span>
+        <span class="tag" onclick="toggleTag(this)">Teknologi</span>
+        <span class="tag" onclick="toggleTag(this)">Ekonomi</span>
+        <span class="tag" onclick="toggleTag(this)">Agama & Mitos</span>
+        <span class="tag" onclick="toggleTag(this)">Konflik Sosial</span>
+      </div>
+      <label>Aturan Unik Duniamu (opsional)</label>
+      <textarea id="wb-rules" placeholder="Contoh: Di dunia ini, setiap orang lahir dengan warna mata yang menunjukkan takdirnya..."></textarea>
+      <button class="btn" onclick="generateWorld()">✦ Generate Lore</button>
+    </div>
+
+    <div class="result-box" id="wb-result" style="display:none">
+      <button class="copy-btn" onclick="copyResult('wb-result')">Copy</button>
+      <div class="result-label">World Lore</div>
+      <div id="wb-result-text"></div>
+    </div>
+  </div>
+
+  <!-- ========== PLOT TWIST ========== -->
+  <div class="tab-panel" id="tab-twist">
+    <div class="section-title">Plot <span>Twist</span> Generator</div>
+    <div class="section-sub">Ide twist mengejutkan yang mengubah segalanya</div>
+
+    <div class="card">
+      <h3>Konteks Ceritamu</h3>
+      <label>Ringkasan Cerita Saat Ini</label>
+      <textarea id="pt-story" placeholder="Ceritakan apa yang sudah terjadi dalam ceritamu sejauh ini..."></textarea>
+      <label>Intensitas Twist</label>
+      <div class="tags-row" id="pt-intensity">
+        <span class="tag" onclick="selectOne(this,'pt-intensity')">Ringan (mengejutkan)</span>
+        <span class="tag selected" onclick="selectOne(this,'pt-intensity')">Sedang (mind-bending)</span>
+        <span class="tag" onclick="selectOne(this,'pt-intensity')">Ekstrem (mengubah segalanya)</span>
+      </div>
+      <label>Tipe Twist yang Diinginkan</label>
+      <div class="tags-row" id="pt-type">
+        <span class="tag" onclick="toggleTag(this)">Pengkhianatan karakter</span>
+        <span class="tag" onclick="toggleTag(this)">Identitas tersembunyi</span>
+        <span class="tag" onclick="toggleTag(this)">Realitas palsu</span>
+        <span class="tag" onclick="toggleTag(this)">Motivasi yang berubah</span>
+        <span class="tag" onclick="toggleTag(this)">Koneksi masa lalu</span>
+        <span class="tag" onclick="toggleTag(this)">Villain adalah hero</span>
+      </div>
+      <button class="btn" onclick="generateTwist()">✦ Generate Twist</button>
+    </div>
+
+    <div class="result-box" id="pt-result" style="display:none">
+      <button class="copy-btn" onclick="copyResult('pt-result')">Copy</button>
+      <div class="result-label">Plot Twist Ideas</div>
+      <div id="pt-result-text"></div>
+    </div>
+  </div>
+
+  <!-- ========== WRITING PROMPT ========== -->
+  <div class="tab-panel" id="tab-prompt">
+    <div class="section-title">Writing <span>Prompt</span> Generator</div>
+    <div class="section-sub">Hilangkan writer's block dengan prompt yang menginspirasi</div>
+
+    <div class="card">
+      <h3>Preferensi Prompt</h3>
+      <div class="grid2">
+        <div>
+          <label>Genre</label>
+          <select id="wp-genre">
+            <option>Bebas (acak)</option>
+            <option>Fantasy</option>
+            <option>Romance</option>
+            <option>Horror</option>
+            <option>Sci-Fi</option>
+            <option>Thriller</option>
+            <option>Slice of Life</option>
+          </select>
+        </div>
+        <div>
+          <label>Panjang Target</label>
+          <select id="wp-length">
+            <option>Flash fiction (100-500 kata)</option>
+            <option>Short story (500-3000 kata)</option>
+            <option>Novella / Novel</option>
+          </select>
+        </div>
+      </div>
+      <label>Elemen yang Harus Ada (opsional)</label>
+      <input type="text" id="wp-elements" placeholder="Contoh: cermin ajaib, hujan deras, karakter yang berbohong...">
+      <label>Mood / Suasana</label>
+      <div class="tags-row" id="wp-mood">
+        <span class="tag" onclick="toggleTag(this)">Melankolis</span>
+        <span class="tag" onclick="toggleTag(this)">Menegangkan</span>
+        <span class="tag" onclick="toggleTag(this)">Hangat & cozy</span>
+        <span class="tag" onclick="toggleTag(this)">Gelap & misterius</span>
+        <span class="tag" onclick="toggleTag(this)">Penuh harapan</span>
+        <span class="tag" onclick="toggleTag(this)">Absurd & lucu</span>
+      </div>
+      <button class="btn" onclick="generatePrompt()">✦ Generate Prompt</button>
+      <button class="btn btn-ghost" style="margin-left:0.5rem" onclick="generatePrompt(true)">🎲 Acak Total</button>
+    </div>
+
+    <div class="result-box" id="wp-result" style="display:none">
+      <button class="copy-btn" onclick="copyResult('wp-result')">Copy</button>
+      <div class="result-label">Writing Prompt</div>
+      <div id="wp-result-text"></div>
+    </div>
+  </div>
+
+  <!-- ========== PROGRESS TRACKER ========== -->
+  <div class="tab-panel" id="tab-tracker">
+    <div class="section-title">Story <span>Progress</span> Tracker</div>
+    <div class="section-sub">Pantau perkembangan proyek tulisanmu</div>
+
+    <div class="card">
+      <h3>Proyek Aktif</h3>
+      <div class="grid2">
+        <div>
+          <label>Nama Proyek</label>
+          <input type="text" id="tr-project" placeholder="Judul ceritamu">
+        </div>
+        <div>
+          <label>Target Word Count</label>
+          <input type="text" id="tr-target" placeholder="Contoh: 50000">
+        </div>
+      </div>
+      <label>Word Count Saat Ini</label>
+      <input type="text" id="tr-current" placeholder="Contoh: 12500">
+      <button class="btn btn-sm" style="margin-top:0.85rem" onclick="updateProgress()">Update Progress</button>
+
+      <div id="tr-progress-display" style="display:none; margin-top:1.25rem">
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Progress</span>
+            <span id="tr-pct">0%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="tr-bar" style="width:0%"></div></div>
+        </div>
+        <p id="tr-words-left" style="font-size:0.8rem; color:var(--mist); margin-top:0.5rem;"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Daftar Chapter</h3>
+      <div id="chapter-list"></div>
+      <div class="divider">— ✦ —</div>
+      <div class="grid3">
+        <div>
+          <label>Judul Chapter</label>
+          <input type="text" id="ch-add-title" placeholder="Nama chapter">
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="ch-add-status">
+            <option value="draft">Draft</option>
+            <option value="wip">WIP</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="btn btn-sm" onclick="addChapter()" style="width:100%;justify-content:center">+ Tambah</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Catatan Penulis</h3>
+      <textarea id="tr-notes" placeholder="Catat ide, reminders, atau hal yang perlu direvisi..." style="min-height:120px" oninput="saveNotes()"></textarea>
+    </div>
+  </div>
+
+  <!-- ========== SNIPPET SAVER ========== -->
+  <div class="tab-panel" id="tab-snippet">
+    <div class="section-title">Snippet <span>Saver</span></div>
+    <div class="section-sub">Simpan kutipan & paragraf favoritmu</div>
+    <div class="card">
+      <h3>Tambah Snippet Baru</h3>
+      <label>Label / Kategori</label>
+      <input type="text" id="sn-label" placeholder="Contoh: Dialog favorit, Deskripsi scene, Ide random...">
+      <label>Teks Snippet</label>
+      <textarea id="sn-text" placeholder="Tempel atau tulis kutipan, paragraf, atau ide yang ingin disimpan..." style="min-height:110px"></textarea>
+      <button class="btn" onclick="addSnippet()">✦ Simpan Snippet</button>
+    </div>
+    <div id="snippet-list"></div>
+  </div>
+
+  <!-- ========== WRITING TIMER ========== -->
+  <div class="tab-panel" id="tab-timer">
+    <div class="section-title">Writing <span>Timer</span></div>
+    <div class="section-sub">Pomodoro khusus untuk sesi menulismu</div>
+    <div class="card">
+      <div class="timer-display">
+        <div class="timer-clock" id="timer-clock">25:00</div>
+        <div class="timer-label" id="timer-label">Siap menulis?</div>
+      </div>
+      <div class="timer-presets">
+        <button class="timer-preset active" onclick="setTimer(25,'Sesi Fokus')" data-min="25">25 menit</button>
+        <button class="timer-preset" onclick="setTimer(50,'Sesi Panjang')" data-min="50">50 menit</button>
+        <button class="timer-preset" onclick="setTimer(5,'Istirahat Singkat')" data-min="5">5 menit istirahat</button>
+        <button class="timer-preset" onclick="setTimer(15,'Istirahat Panjang')" data-min="15">15 menit istirahat</button>
+      </div>
+      <div class="timer-controls">
+        <button class="btn" onclick="startTimer()">▶ Mulai</button>
+        <button class="btn btn-ghost" onclick="pauseTimer()">⏸ Pause</button>
+        <button class="btn btn-ghost" onclick="resetTimer()">↺ Reset</button>
+      </div>
+      <div style="margin-top:1.5rem">
+        <label>Target Sesi Hari Ini</label>
+        <div style="display:flex;gap:0.75rem;align-items:center;margin-top:0.35rem">
+          <input type="text" id="timer-session-target" placeholder="Contoh: 4" style="max-width:80px">
+          <span style="font-size:0.85rem;color:var(--mist)">sesi — selesai: <span id="timer-done" style="color:var(--amber)">0</span></span>
+          <button class="btn btn-sm btn-ghost" onclick="addTimerSession()">+ Tandai Selesai</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MOOD PLAYLIST ========== -->
+  <div class="tab-panel" id="tab-playlist">
+    <div class="section-title">Mood <span>Playlist</span></div>
+    <div class="section-sub">Musik yang cocok untuk setiap mood menulis</div>
+    <div class="card">
+      <h3>Pilih Mood Ceritamu</h3>
+      <div class="tags-row" id="pl-mood">
+        <span class="tag selected" onclick="selectOne(this,'pl-mood');showPlaylist()">Epik & Dramatis</span>
+        <span class="tag" onclick="selectOne(this,'pl-mood');showPlaylist()">Melankolis & Sendu</span>
+        <span class="tag" onclick="selectOne(this,'pl-mood');showPlaylist()">Menegangkan & Gelap</span>
+        <span class="tag" onclick="selectOne(this,'pl-mood');showPlaylist()">Hangat & Cozy</span>
+        <span class="tag" onclick="selectOne(this,'pl-mood');showPlaylist()">Romantis</span>
+        <span class="tag" onclick="selectOne(this,'pl-mood');showPlaylist()">Petualangan</span>
+        <span class="tag" onclick="selectOne(this,'pl-mood');showPlaylist()">Fokus & Produktif</span>
+      </div>
+    </div>
+    <div class="card" id="playlist-result">
+      <h3>Rekomendasi Playlist</h3>
+      <div id="playlist-items"></div>
+    </div>
+  </div>
+
+  <!-- ========== READING LIST ========== -->
+  <div class="tab-panel" id="tab-readinglist">
+    <div class="section-title">Reading <span>List</span></div>
+    <div class="section-sub">Catat referensi & inspirasi bacaanmu</div>
+    <div class="card">
+      <h3>Tambah Buku / Referensi</h3>
+      <div class="grid2">
+        <div>
+          <label>Judul</label>
+          <input type="text" id="rl-title" placeholder="Judul buku/karya">
+        </div>
+        <div>
+          <label>Penulis / Sumber</label>
+          <input type="text" id="rl-author" placeholder="Nama penulis">
+        </div>
+      </div>
+      <div class="grid2">
+        <div>
+          <label>Status</label>
+          <select id="rl-status">
+            <option value="want">Mau Baca</option>
+            <option value="reading">Sedang Baca</option>
+            <option value="done">Sudah Baca</option>
+          </select>
+        </div>
+        <div>
+          <label>Catatan / Alasan</label>
+          <input type="text" id="rl-note" placeholder="Kenapa menarik?">
+        </div>
+      </div>
+      <button class="btn" onclick="addBook()">✦ Tambah ke List</button>
+    </div>
+    <div class="card">
+      <h3>Daftar Bacaan</h3>
+      <div id="book-list"><p style="font-size:0.8rem;color:var(--mist);font-style:italic">Belum ada buku. Tambahkan di atas!</p></div>
+    </div>
+  </div>
+
+  <!-- ========== NAME GENERATOR ========== -->
+  <div class="tab-panel" id="tab-namegen">
+    <div class="section-title">Name <span>Generator</span></div>
+    <div class="section-sub">Generate nama karakter yang pas untuk duniamu</div>
+    <div class="card">
+      <h3>Preferensi Nama</h3>
+      <div class="grid2">
+        <div>
+          <label>Setting Dunia</label>
+          <select id="ng-setting">
+            <option>Fantasy Medieval</option>
+            <option>Modern / Kontemporer</option>
+            <option>Sci-Fi Futuristik</option>
+            <option>Jepang / Asia Timur</option>
+            <option>Timur Tengah / Arabian</option>
+            <option>Celtic / Norse</option>
+            <option>Indonesia / Nusantara</option>
+            <option>Elven / Magis</option>
+            <option>Dark / Gothic</option>
+          </select>
+        </div>
+        <div>
+          <label>Jenis Kelamin</label>
+          <select id="ng-gender">
+            <option>Campuran</option>
+            <option>Maskulin</option>
+            <option>Feminin</option>
+            <option>Netral / Unisex</option>
+          </select>
+        </div>
+      </div>
+      <label>Vibe Nama</label>
+      <div class="tags-row" id="ng-vibe">
+        <span class="tag" onclick="toggleTag(this)">Kuat & Gagah</span>
+        <span class="tag" onclick="toggleTag(this)">Lembut & Elegan</span>
+        <span class="tag" onclick="toggleTag(this)">Misterius</span>
+        <span class="tag" onclick="toggleTag(this)">Sederhana</span>
+        <span class="tag" onclick="toggleTag(this)">Unik & Asing</span>
+        <span class="tag" onclick="toggleTag(this)">Kuno & Klasik</span>
+      </div>
+      <label>Jumlah nama yang diinginkan</label>
+      <select id="ng-count">
+        <option value="10">10 nama</option>
+        <option value="20">20 nama</option>
+        <option value="30">30 nama</option>
+      </select>
+      <button class="btn" onclick="generateNames()">✦ Generate Nama</button>
+    </div>
+    <div id="ng-result" style="display:none">
+      <div class="card">
+        <h3>Hasil Generate</h3>
+        <p style="font-size:0.78rem;color:var(--mist);margin-bottom:0.5rem">Klik nama untuk menyalin</p>
+        <div class="name-result-grid" id="ng-names"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-ornament">✦ ✦ ✦</div>
+  <div class="footer-copy">
+    <span>© 2026</span> Writer's Companion &nbsp;·&nbsp;
+    Made with <span class="footer-heart">♥</span> by <span class="footer-name">VaL</span>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+// ===== NAV =====
+document.getElementById('nav').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-tab]');
+  if (!btn) return;
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+});
+
+// ===== TAG HELPERS =====
+function toggleTag(el) { el.classList.toggle('selected'); }
+function selectOne(el, groupId) {
+  document.querySelectorAll(`#${groupId} .tag`).forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function getSelectedTags(groupId) {
+  return [...document.querySelectorAll(`#${groupId} .tag.selected`)].map(t => t.textContent);
+}
+
+// ===== COPY =====
+function copyResult(id) {
+  const textEl = document.getElementById(id.replace('result','result-text'));
+  if (!textEl) return;
+  navigator.clipboard.writeText(textEl.innerText).catch(()=>{});
+  showToast('Disalin! ✦');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ===== CLAUDE API =====
+async function callClaude(prompt) {
+  const res = await fetch('/api/claude', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  return data.content?.map(b => b.text || '').join('') || 'Terjadi kesalahan, coba lagi.';
+}
+
+function showLoading(resultId, textId) {
+  const box = document.getElementById(resultId);
+  box.style.display = 'block';
+  document.getElementById(textId).innerHTML = '<span class="loading">⟳ Sedang menulis...</span>';
+}
+
+// ===== OUTLINE =====
+async function generateOutline() {
+  const title = document.getElementById('ol-title').value;
+  const genre = document.getElementById('ol-genre').value;
+  const pov = document.getElementById('ol-pov').value;
+  const protag = document.getElementById('ol-protag').value;
+  const conflict = document.getElementById('ol-conflict').value;
+  if (!title && !protag) { showToast('Isi dulu premis atau tokoh utama ya!'); return; }
+
+  showLoading('ol-result', 'ol-result-text');
+  const prompt = `Kamu adalah seorang penulis fiksi profesional berbahasa Indonesia. Buatkan story outline lengkap berdasarkan info berikut:
+
+Premis/Judul: ${title || '(tidak ditentukan)'}
+Genre: ${genre}
+Sudut Pandang: ${pov}
+Tokoh Utama & Tujuan: ${protag || '(tidak ditentukan)'}
+Konflik Utama: ${conflict || '(tidak ditentukan)'}
+
+Buat outline yang mencakup:
+1. PREMIS — 2-3 kalimat inti cerita
+2. BABAK 1 — Perkenalan, pemicu konflik
+3. BABAK 2A — Eskalasi, komplikasi
+4. MIDPOINT — Titik balik di tengah
+5. BABAK 2B — Situasi memburuk, dark night of the soul
+6. BABAK 3 — Klimaks dan resolusi
+
+Gunakan bahasa Indonesia yang menarik. Berikan detail yang cukup untuk tiap bagian. Format dengan rapi.`;
+
+  const result = await callClaude(prompt);
+  document.getElementById('ol-result-text').textContent = result;
+}
+
+// ===== CHARACTER =====
+async function generateCharacter() {
+  const name = document.getElementById('ch-name').value;
+  const age = document.getElementById('ch-age').value;
+  const role = document.getElementById('ch-role').value;
+  const traits = getSelectedTags('ch-traits');
+  const bg = document.getElementById('ch-bg').value;
+  const want = document.getElementById('ch-want').value;
+  const fear = document.getElementById('ch-fear').value;
+  if (!name) { showToast('Masukkan nama karakter dulu!'); return; }
+
+  showLoading('ch-result', 'ch-result-text');
+  const prompt = `Kamu adalah penulis fiksi profesional. Buatkan profil karakter yang mendalam dan hidup:
+
+Nama: ${name}
+Usia: ${age || 'tidak ditentukan'}
+Peran: ${role}
+Kepribadian: ${traits.join(', ') || 'tidak dipilih'}
+Latar belakang: ${bg || 'tidak ada'}
+Keinginan terdalam: ${want || 'tidak ditentukan'}
+Ketakutan terbesar: ${fear || 'tidak ditentukan'}
+
+Buatkan profil karakter lengkap dalam bahasa Indonesia meliputi:
+• PENAMPILAN — gambaran fisik yang berkesan
+• KEPRIBADIAN — cara berpikir, berbicara, bertindak
+• LATAR BELAKANG — kisah yang membentuk mereka
+• ARC KARAKTER — bagaimana mereka bisa berkembang
+• HABIT & QUIRK — kebiasaan unik yang memorable
+• DIALOG KHAS — 2-3 contoh cara mereka berbicara
+• HUBUNGAN — bagaimana mereka berinteraksi dengan orang lain
+
+Buat karakter ini terasa nyata dan berkedalaman.`;
+
+  const result = await callClaude(prompt);
+  document.getElementById('ch-result-text').textContent = result;
+}
+
+// ===== WORLD =====
+async function generateWorld() {
+  const name = document.getElementById('wb-name').value;
+  const type = document.getElementById('wb-type').value;
+  const aspects = getSelectedTags('wb-aspects');
+  const rules = document.getElementById('wb-rules').value;
+
+  showLoading('wb-result', 'wb-result-text');
+  const prompt = `Kamu adalah worldbuilder fiksi profesional berbahasa Indonesia. Bangun dunia fiksi berikut:
+
+Nama/Setting: ${name || 'dunia tanpa nama'}
+Tipe: ${type}
+Aspek yang dibangun: ${aspects.join(', ') || 'umum'}
+Aturan unik: ${rules || 'tidak ada'}
+
+Bangun dunia ini dengan detail kaya dan imajinatif dalam bahasa Indonesia. Untuk setiap aspek yang diminta, berikan:
+- Penjelasan mendalam (bukan sekadar poin-poin)
+- Detail unik yang memorable
+- Bagaimana aspek ini mempengaruhi kehidupan sehari-hari penduduknya
+- Potensi konflik yang muncul dari aspek ini
+
+Jadikan dunia ini terasa hidup, konsisten, dan menarik untuk dijelajahi.`;
+
+  const result = await callClaude(prompt);
+  document.getElementById('wb-result-text').textContent = result;
+}
+
+// ===== TWIST =====
+async function generateTwist() {
+  const story = document.getElementById('pt-story').value;
+  const intensity = getSelectedTags('pt-intensity')[0] || 'Sedang';
+  const types = getSelectedTags('pt-type');
+  if (!story) { showToast('Ceritakan dulu konteks ceritamu!'); return; }
+
+  showLoading('pt-result', 'pt-result-text');
+  const prompt = `Kamu adalah penulis fiksi dengan keahlian plot twist. Berikan ide plot twist yang mengejutkan.
+
+Cerita saat ini: ${story}
+Intensitas: ${intensity}
+Tipe twist yang diinginkan: ${types.join(', ') || 'bebas'}
+
+Berikan 3 ide plot twist yang berbeda dalam bahasa Indonesia. Untuk masing-masing:
+1. TWIST — Penjelasan singkat twist-nya apa
+2. SETUP — Bagaimana menanam petunjuk tanpa ketahuan
+3. REVEAL — Cara terbaik mengungkapkan twist ini
+4. DAMPAK — Bagaimana twist ini mengubah cerita dan karakter
+
+Buat twist yang terasa mengejutkan tapi logis jika dilihat ke belakang (tidak asal-asalan).`;
+
+  const result = await callClaude(prompt);
+  document.getElementById('pt-result-text').textContent = result;
+}
+
+// ===== PROMPT =====
+async function generatePrompt(random = false) {
+  const genre = random ? 'acak' : document.getElementById('wp-genre').value;
+  const length = document.getElementById('wp-length').value;
+  const elements = document.getElementById('wp-elements').value;
+  const mood = getSelectedTags('wp-mood');
+
+  showLoading('wp-result', 'wp-result-text');
+  const prompt = `Kamu adalah generator writing prompt kreatif berbahasa Indonesia.
+
+${random ? 'Buat writing prompt yang benar-benar acak dan unik!' : `Genre: ${genre}`}
+Panjang target: ${length}
+Elemen yang harus ada: ${elements || 'bebas'}
+Mood: ${mood.join(', ') || 'bebas'}
+
+Berikan 1 writing prompt yang:
+- Memiliki pembuka yang langsung menarik (in medias res atau hook yang kuat)
+- Cukup spesifik untuk memulai, tapi cukup terbuka untuk dikembangkan
+- Mengandung konflik atau misteri yang menggoda
+- Sesuai dengan mood dan genre yang diminta
+
+Setelah prompt utama, berikan:
+• KARAKTER — Saran karakter yang bisa digunakan
+• PERTANYAAN KUNCI — 3 pertanyaan yang bisa mendorong cerita
+• ARAH CERITA — 2 kemungkinan arah yang bisa diambil
+
+Buat dalam bahasa Indonesia yang menggugah semangat menulis!`;
+
+  const result = await callClaude(prompt);
+  document.getElementById('wp-result-text').textContent = result;
+}
+
+// ===== TRACKER =====
+let chapters = JSON.parse(localStorage.getItem('wc_chapters') || '[]');
+let notes = localStorage.getItem('wc_notes') || '';
+document.getElementById('tr-notes').value = notes;
+renderChapters();
+
+function updateProgress() {
+  const target = parseInt(document.getElementById('tr-target').value) || 0;
+  const current = parseInt(document.getElementById('tr-current').value) || 0;
+  if (!target) { showToast('Masukkan target word count!'); return; }
+  const pct = Math.min(100, Math.round(current / target * 100));
+  const left = Math.max(0, target - current);
+  document.getElementById('tr-progress-display').style.display = 'block';
+  document.getElementById('tr-pct').textContent = pct + '%';
+  document.getElementById('tr-bar').style.width = pct + '%';
+  document.getElementById('tr-words-left').textContent =
+    left > 0 ? `${left.toLocaleString()} kata lagi menuju target ✦` : '🎉 Target tercapai! Luar biasa!';
+}
+
+function addChapter() {
+  const title = document.getElementById('ch-add-title').value.trim();
+  const status = document.getElementById('ch-add-status').value;
+  if (!title) { showToast('Tulis judul chapter dulu!'); return; }
+  chapters.push({ title, status, id: Date.now() });
+  localStorage.setItem('wc_chapters', JSON.stringify(chapters));
+  document.getElementById('ch-add-title').value = '';
+  renderChapters();
+  showToast('Chapter ditambahkan! ✦');
+}
+
+function deleteChapter(id) {
+  chapters = chapters.filter(c => c.id !== id);
+  localStorage.setItem('wc_chapters', JSON.stringify(chapters));
+  renderChapters();
+}
+
+function changeStatus(id, status) {
+  const ch = chapters.find(c => c.id === id);
+  if (ch) { ch.status = status; localStorage.setItem('wc_chapters', JSON.stringify(chapters)); renderChapters(); }
+}
+
+function renderChapters() {
+  const list = document.getElementById('chapter-list');
+  if (chapters.length === 0) {
+    list.innerHTML = '<p style="font-size:0.8rem;color:var(--mist);font-style:italic">Belum ada chapter. Tambahkan di bawah!</p>';
+    return;
+  }
+  list.innerHTML = chapters.map((c, i) => `
+    <div class="chapter-item">
+      <span class="chapter-num">Ch.${i+1}</span>
+      <span style="flex:1;font-size:0.88rem">${c.title}</span>
+      <select onchange="changeStatus(${c.id},this.value)" style="width:auto;font-size:0.72rem;padding:0.2rem 0.4rem">
+        <option value="draft" ${c.status==='draft'?'selected':''}>Draft</option>
+        <option value="wip" ${c.status==='wip'?'selected':''}>WIP</option>
+        <option value="done" ${c.status==='done'?'selected':''}>Done</option>
+      </select>
+      <span class="chapter-status status-${c.status}">${c.status.toUpperCase()}</span>
+      <button class="btn btn-sm btn-danger" onclick="deleteChapter(${c.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function saveNotes() {
+  localStorage.setItem('wc_notes', document.getElementById('tr-notes').value);
+}
+
+// ===== SNIPPET SAVER =====
+let snippets = JSON.parse(localStorage.getItem('wc_snippets') || '[]');
+renderSnippets();
+
+function addSnippet() {
+  const label = document.getElementById('sn-label').value.trim() || 'Umum';
+  const text = document.getElementById('sn-text').value.trim();
+  if (!text) { showToast('Tulis dulu snippetnya!'); return; }
+  snippets.unshift({ label, text, id: Date.now() });
+  localStorage.setItem('wc_snippets', JSON.stringify(snippets));
+  document.getElementById('sn-label').value = '';
+  document.getElementById('sn-text').value = '';
+  renderSnippets();
+  showToast('Snippet disimpan! ✦');
+}
+
+function deleteSnippet(id) {
+  snippets = snippets.filter(s => s.id !== id);
+  localStorage.setItem('wc_snippets', JSON.stringify(snippets));
+  renderSnippets();
+}
+
+function renderSnippets() {
+  const list = document.getElementById('snippet-list');
+  if (!list) return;
+  if (snippets.length === 0) {
+    list.innerHTML = '<p style="font-size:0.8rem;color:var(--mist);font-style:italic;padding:0.5rem 0">Belum ada snippet tersimpan.</p>';
+    return;
+  }
+  list.innerHTML = snippets.map(s => `
+    <div class="snippet-item">
+      <div class="snippet-tag">${s.label}</div>
+      <div class="snippet-text">${s.text}</div>
+      <div class="snippet-actions">
+        <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(\`${s.text.replace(/`/g,'\\`')}\`);showToast('Disalin! ✦')">Copy</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteSnippet(${s.id})">Hapus</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== WRITING TIMER =====
+let timerInterval = null;
+let timerSeconds = 25 * 60;
+let timerRunning = false;
+let timerCurrentLabel = 'Sesi Fokus';
+let timerDone = parseInt(localStorage.getItem('wc_timer_done') || '0');
+document.getElementById('timer-done').textContent = timerDone;
+
+function setTimer(min, label) {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerSeconds = min * 60;
+  timerCurrentLabel = label;
+  document.getElementById('timer-label').textContent = label;
+  updateTimerDisplay();
+  document.querySelectorAll('.timer-preset').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.timer-preset[data-min="${min}"]`)?.classList.add('active');
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds / 60).toString().padStart(2,'0');
+  const s = (timerSeconds % 60).toString().padStart(2,'0');
+  document.getElementById('timer-clock').textContent = `${m}:${s}`;
+}
+
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  document.getElementById('timer-label').textContent = timerCurrentLabel + ' — berjalan...';
+  timerInterval = setInterval(() => {
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      document.getElementById('timer-label').textContent = '✦ Sesi selesai!';
+      showToast('Sesi selesai! Istirahat dulu ✦');
+      return;
+    }
+    timerSeconds--;
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function pauseTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  document.getElementById('timer-label').textContent = timerCurrentLabel + ' — dijeda';
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  setTimer(parseInt(document.querySelector('.timer-preset.active')?.dataset.min || '25'), timerCurrentLabel);
+}
+
+function addTimerSession() {
+  timerDone++;
+  localStorage.setItem('wc_timer_done', timerDone);
+  document.getElementById('timer-done').textContent = timerDone;
+  showToast(`Sesi ke-${timerDone} dicatat! 💪`);
+}
+
+// ===== MOOD PLAYLIST =====
+const playlists = {
+  'Epik & Dramatis': [
+    { emoji:'⚔️', name:'Two Steps From Hell', desc:'Orchestral epic, cocok untuk battle scene', q:'Two Steps From Hell playlist' },
+    { emoji:'🎻', name:'Hans Zimmer Scores', desc:'Sinematik dramatis, bikin nulis berasa epik', q:'Hans Zimmer epic film scores' },
+    { emoji:'🔥', name:'Audiomachine', desc:'Orchestral intense untuk klimaks cerita', q:'Audiomachine epic music playlist' },
+  ],
+  'Melankolis & Sendu': [
+    { emoji:'🌧️', name:'Sad Piano Music', desc:'Piano melankolis untuk adegan haru', q:'sad piano music playlist' },
+    { emoji:'🍂', name:'Autumn Acoustic', desc:'Gitar akustik lembut, cocok untuk moment introspeksi', q:'autumn acoustic sad playlist' },
+    { emoji:'🌙', name:'Yiruma Collection', desc:'Piano dreamy yang menyentuh hati', q:'Yiruma piano playlist' },
+  ],
+  'Menegangkan & Gelap': [
+    { emoji:'🕯️', name:'Dark Ambient', desc:'Atmosfer kelam untuk scene horror/thriller', q:'dark ambient horror music playlist' },
+    { emoji:'🖤', name:'Trent Reznor Scores', desc:'Industrial tense, perfect untuk psikologis thriller', q:'Trent Reznor atmospheric score' },
+    { emoji:'⚡', name:'Suspense Orchestral', desc:'Build tension yang bikin pembaca tegang', q:'suspense orchestral thriller music' },
+  ],
+  'Hangat & Cozy': [
+    { emoji:'☕', name:'Lofi Hip Hop', desc:'Beat santai untuk nulis tanpa distraksi', q:'lofi hip hop study playlist' },
+    { emoji:'🏡', name:'Cozy Acoustic', desc:'Folk & indie hangat untuk cerita slice of life', q:'cozy acoustic folk playlist' },
+    { emoji:'📚', name:'Jazz Café', desc:'Smooth jazz, cocok untuk nulis santai', q:'jazz cafe background music playlist' },
+  ],
+  'Romantis': [
+    { emoji:'🌹', name:'Romantic Piano', desc:'Piano manis untuk adegan cinta', q:'romantic piano love music playlist' },
+    { emoji:'💫', name:'Indie Romance', desc:'Indie folk dreamy untuk momen romantis', q:'indie romance playlist' },
+    { emoji:'🎻', name:'Classical Romance', desc:'String quartet elegan untuk love story', q:'classical romantic string quartet' },
+  ],
+  'Petualangan': [
+    { emoji:'🗺️', name:'Adventure Orchestral', desc:'Eksplorasi dan discovery, bikin semangat', q:'adventure orchestral exploration music' },
+    { emoji:'🌊', name:'Celtic Adventure', desc:'Folk Celtic untuk dunia fantasy & petualangan', q:'celtic adventure folk music playlist' },
+    { emoji:'⛵', name:'Indie Adventure', desc:'Upbeat indie untuk perjalanan seru', q:'indie adventure upbeat playlist' },
+  ],
+  'Fokus & Produktif': [
+    { emoji:'🧠', name:'Brain.fm / Focus', desc:'Musik berbasis neurosains untuk deep focus', q:'focus deep work music playlist' },
+    { emoji:'🎹', name:'Minimal Techno', desc:'Beat repetitif yang bikin masuk flow', q:'minimal techno focus work playlist' },
+    { emoji:'🌿', name:'Nature + Ambient', desc:'Suara alam + ambient untuk konsentrasi', q:'nature ambient focus music' },
+  ],
+};
+
+function showPlaylist() {
+  const mood = getSelectedTags('pl-mood')[0] || 'Epik & Dramatis';
+  const items = playlists[mood] || [];
+  document.getElementById('playlist-items').innerHTML = items.map(p => `
+    <div class="playlist-item">
+      <span class="playlist-emoji">${p.emoji}</span>
+      <div class="playlist-info">
+        <div class="pl-name">${p.name}</div>
+        <div class="pl-desc">${p.desc}</div>
+      </div>
+      <a class="playlist-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(p.q)}" target="_blank">Cari ↗</a>
+    </div>
+  `).join('');
+}
+showPlaylist();
+
+// ===== READING LIST =====
+let books = JSON.parse(localStorage.getItem('wc_books') || '[]');
+renderBooks();
+
+function addBook() {
+  const title = document.getElementById('rl-title').value.trim();
+  const author = document.getElementById('rl-author').value.trim();
+  const status = document.getElementById('rl-status').value;
+  const note = document.getElementById('rl-note').value.trim();
+  if (!title) { showToast('Masukkan judul buku dulu!'); return; }
+  books.unshift({ title, author, status, note, id: Date.now() });
+  localStorage.setItem('wc_books', JSON.stringify(books));
+  document.getElementById('rl-title').value = '';
+  document.getElementById('rl-author').value = '';
+  document.getElementById('rl-note').value = '';
+  renderBooks();
+  showToast('Buku ditambahkan! ✦');
+}
+
+function deleteBook(id) {
+  books = books.filter(b => b.id !== id);
+  localStorage.setItem('wc_books', JSON.stringify(books));
+  renderBooks();
+}
+
+function renderBooks() {
+  const list = document.getElementById('book-list');
+  if (!list) return;
+  if (books.length === 0) {
+    list.innerHTML = '<p style="font-size:0.8rem;color:var(--mist);font-style:italic">Belum ada buku. Tambahkan di atas!</p>';
+    return;
+  }
+  const statusLabel = { want:'Mau Baca', reading:'Sedang Baca', done:'Sudah Baca' };
+  list.innerHTML = books.map((b, i) => `
+    <div class="book-item">
+      <span class="book-num">${i+1}.</span>
+      <div class="book-info">
+        <div class="book-title">${b.title}</div>
+        ${b.author ? `<div class="book-author">oleh ${b.author}</div>` : ''}
+        ${b.note ? `<div class="book-note">"${b.note}"</div>` : ''}
+      </div>
+      <span class="book-status-badge bstatus-${b.status}">${statusLabel[b.status]}</span>
+      <button class="btn btn-sm btn-danger" style="margin-left:0.5rem" onclick="deleteBook(${b.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+// ===== NAME GENERATOR =====
+async function generateNames() {
+  const setting = document.getElementById('ng-setting').value;
+  const gender = document.getElementById('ng-gender').value;
+  const vibe = getSelectedTags('ng-vibe');
+  const count = document.getElementById('ng-count').value;
+
+  document.getElementById('ng-result').style.display = 'block';
+  document.getElementById('ng-names').innerHTML = '<span style="color:var(--amber);font-style:italic">⟳ Generating...</span>';
+
+  const prompt = `Kamu adalah generator nama karakter fiksi. Generate ${count} nama karakter yang unik dan memorable.
+
+Setting dunia: ${setting}
+Jenis kelamin: ${gender}
+Vibe nama: ${vibe.join(', ') || 'bebas'}
+
+Berikan HANYA daftar nama saja, satu nama per baris, tanpa penjelasan, tanpa nomor, tanpa tanda baca tambahan. Nama harus terasa autentik sesuai setting dan vibe yang diminta.`;
+
+  const result = await callClaude(prompt);
+  const names = result.split('\n').map(n => n.trim()).filter(n => n.length > 0 && n.length < 40);
+  document.getElementById('ng-names').innerHTML = names.map(n => `
+    <div class="name-chip" onclick="navigator.clipboard.writeText('${n.replace(/'/g,"\\'")}');showToast('${n.replace(/'/g,"\\'")} disalin! ✦')">${n}</div>
+  `).join('');
+}
+</script>
+</body>
+</html>
