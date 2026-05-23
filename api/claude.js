@@ -86,8 +86,10 @@ module.exports = async function handler(req, res) {
 
     // Ambil text hasil
     const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      'Tidak ada respon dari AI';
+		data?.candidates?.[0]?.content?.parts
+    		?.map(p => p.text)
+   		 .join('') ||
+		'Tidak ada respon dari AI';
 
     // Return sukses
     return res.status(200).json({
