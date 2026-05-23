@@ -1,4 +1,16 @@
 module.exports = async function handler(req, res) {
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    console.log("KEY:", apiKey);
+
+    if (!apiKey) {
+      return res.status(500).json({
+        error: "API key tidak terbaca"
+      });
+    }
+
+    // code lain... {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
