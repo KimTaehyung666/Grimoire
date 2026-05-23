@@ -66,7 +66,7 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           contents,
           generationConfig: {
-            maxOutputTokens: max_tokens || 1000,
+            maxOutputTokens: max_tokens || 10000,
             temperature: 0.9
           }
         })
