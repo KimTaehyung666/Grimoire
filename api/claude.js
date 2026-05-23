@@ -57,7 +57,7 @@ module.exports = async function handler(req, res) {
 
     // Request ke Gemini
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
@@ -66,7 +66,7 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           contents,
           generationConfig: {
-            maxOutputTokens: max_tokens || 8000,
+            maxOutputTokens: Math.min(max_tokens || 2000, 2000)
             temperature: 0.9
           }
         })
