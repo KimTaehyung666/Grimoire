@@ -1,35 +1,61 @@
 module.exports = async function handler(req, res) {
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  // Handle preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
+  // Hanya izinkan POST
+  if (req.method !== 'POST') {
+    return res.status(405).json({
+      error: 'Method not allowed'
+    });
+  }
+
   try {
+    // Ambil API key
     const apiKey = process.env.GEMINI_API_KEY;
 
-    console.log("KEY:", apiKey);
+    console.log('KEY EXISTS:', !!apiKey);
 
     if (!apiKey) {
       return res.status(500).json({
-        error: 'API key tidak terbaca'
+        error: 'API key tidak ditemukan'
       });
     }
 
+    // Parse body
     const body =
       typeof req.body === 'string'
         ? JSON.parse(req.body)
         : req.body;
 
+    console.log('BODY:', body);
+
+    // Validasi body
+    if (!body || !body.messages) {
+      return res.status(400).json({
+        error: 'messages tidak ada'
+      });
+    }
+
     const { messages, max_tokens } = body;
 
-    const contents = messages.map(m => ({
+    // Format Gemini
+    const contents = messages.map((m) => ({
       role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }]
+      parts: [
+        {
+          text: m.content
+        }
+      ]
     }));
 
+    // Request ke Gemini
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
       {
@@ -40,7 +66,8 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           contents,
           generationConfig: {
-            maxOutputTokens: max_tokens || 1000
+            maxOutputTokens: max_tokens || 1000,
+            temperature: 0.9
           }
         })
       }
@@ -48,18 +75,21 @@ module.exports = async function handler(req, res) {
 
     const data = await response.json();
 
-    console.log(data);
+    console.log('GEMINI RESPONSE:', data);
 
+    // Error Gemini
     if (data.error) {
       return res.status(500).json({
         error: data.error.message
       });
     }
 
+    // Ambil text hasil
     const text =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      'Tidak ada respon';
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      'Tidak ada respon dari AI';
 
+    // Return sukses
     return res.status(200).json({
       content: [
         {
@@ -70,10 +100,11 @@ module.exports = async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error('SERVER ERROR:', err);
 
     return res.status(500).json({
-      error: err.message
+      error: err.message || 'Internal server error'
     });
   }
 };
+
