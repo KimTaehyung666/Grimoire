@@ -40,13 +40,16 @@
     overflow: hidden;
   }
   header::before {
-    content: '✦ ✦ ✦';
-    display: block;
-    color: var(--amber);
-    font-size: 0.75rem;
-    letter-spacing: 1rem;
-    margin-bottom: 0.75rem;
-    opacity: 0.7;
+  	content: '✦ ✦ ✦';
+  	display: flex;
+  	justify-content: center;
+	  align-items: center;
+	  gap: 1.2rem;
+
+  	color: var(--amber);
+  	font-size: 0.75rem;
+  	margin-bottom: 0.75rem;
+  	opacity: 0.7;
   }
   header h1 {
     font-family: 'Playfair Display', serif;
@@ -54,6 +57,7 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1;
+    display: inline-block;
   }
   header h1 span { color: var(--amber); font-style: italic; }
   header p {
